@@ -1,16 +1,16 @@
 /*
 // Created by Ethan Sherbondy
 // 6.837, Fall 2012
+//
+// References: 
+// http://alumni.cs.ucsb.edu/~wombatty/tutorials/opengl_mac_osx.html
 */
 
 #ifdef __APPLE__
 # include <GLUT/glut.h>
-/* Just in case we need these later
-// References: 
-// http://alumni.cs.ucsb.edu/~wombatty/tutorials/opengl_mac_osx.html
+// Just in case we need these later
 // # include <OpenGL/gl.h>
 // # include <OpenGL/glu.h>
-*/
 #else
 # include <GL/glut.h>
 #endif
