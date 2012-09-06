@@ -1,3 +1,8 @@
+/*
+// Created by Ethan Sherbondy
+// 6.837, Fall 2012
+*/
+
 #ifdef __APPLE__
 # include <GLUT/glut.h>
 /* Just in case we need these later
