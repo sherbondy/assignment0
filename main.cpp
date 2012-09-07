@@ -54,7 +54,8 @@ namespace g
     int       colorN = 0;
     char      lastKey = 'c';
     float     lx, ly; // light position
-    int       xPos, rotationX = 0;
+    int       xPos, rotationY  = 0;
+    int       yPos, rotationX  = 0;
 }
 
 
@@ -109,16 +110,16 @@ void specialFunc( int key, int x, int y )
     switch ( key )
     {
     case GLUT_KEY_UP:
-		g::ly += 1.0f;
+		g::ly += 0.5f;
 		break;
     case GLUT_KEY_DOWN:
-		g::ly -= 1.0f;
+		g::ly -= 0.5f;
 		break;
     case GLUT_KEY_LEFT:
-		g::lx -= 1.0f;
+		g::lx -= 0.5f;
 		break;
     case GLUT_KEY_RIGHT:
-		g::lx += 1.0f;
+		g::lx += 0.5f;
 		break;
     }
 
@@ -146,7 +147,6 @@ void drawScene(void)
 
     // Set material properties of object
 
-    glRotatef(g::rotationX, 0, 1, 0);
 
 	// Here are some colors you might use - feel free to add more
     GLfloat diffColors[4][4] = { {0.5, 0.5, 0.9, 1.0},
@@ -177,6 +177,8 @@ void drawScene(void)
 
     glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
     glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
+
+    glRotatef(g::rotationY, 0, 1, 0);
 
 	// This GLUT method draws a teapot.  You should replace
 	// it with code which draws the object you loaded.
@@ -216,9 +218,13 @@ void reshapeFunc(int w, int h)
 
 void motionFunc(int x, int y)
 {
-    // move left or right based on previous x position.
-    inc_mod(g::rotationX, x - g::xPos, 360);
+    // rotate left or right (about the y axis) based on previous x position.
+    inc_mod(g::rotationY, x - g::xPos, 360);
     g::xPos = x;
+
+    inc_mod(g::rotationX, y - g::yPos, 360);
+    g::yPos = y;
+
     glutPostRedisplay();
 }
 
@@ -226,6 +232,7 @@ void mouseFunc(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN) {
         g::xPos = x;
+        g::yPos = y;
     }
     glutPostRedisplay();
 }
