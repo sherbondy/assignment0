@@ -5,6 +5,8 @@ ifeq ($(UNAME),Darwin)
 
 	FRAMEWORKS  = -framework GLUT
 	FRAMEWORKS += -framework OpenGL
+
+	LINKFLAGS += -L lib/ -lvecmath
 else
 	INCFLAGS  = -I /usr/include/GL
 	INCFLAGS += -I /mit/6.837/public/include/vecmath
@@ -33,3 +35,4 @@ depend:
 clean:
 	rm $(OBJS) $(PROG)
 
+libvecmath:

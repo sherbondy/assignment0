@@ -27,6 +27,8 @@ using namespace std;
 
 // Globals
 
+#define MAX_BUFFER_SIZE 1024*1024
+
 // This is the list of points (3D vectors)
 vector<Vector3f> vecv;
 
@@ -240,6 +242,26 @@ void mouseFunc(int button, int state, int x, int y)
 void loadInput()
 {
 	// load the OBJ file here
+    char buffer[MAX_BUFFER_SIZE];
+    while (cin.getline(buffer, MAX_BUFFER_SIZE)){
+        stringstream ss(buffer);
+
+        Vector3f v;
+        string s;
+
+        ss >> s; // put a token into s
+        cout << s;
+        if (s == "v") {
+            ss >> v[0] >> v[1] >> v[2];
+            vecv.push_back(v);
+        } else if (s == "vn") {
+            ss >> v[0] >> v[1] >> v[2];
+            vecn.push_back(v);
+        } else if (s == "f") {
+            
+        }
+    }
+
 }
 
 // Main routine.
