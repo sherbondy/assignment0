@@ -52,7 +52,8 @@ namespace g
     // man, I should be using C++ 11
     color_map colors = create_colors();
     int       color_n = 0;
-    char      last_keypress;
+    char      last_keypress = 'c';
+    float     lx, ly; // light position
 }
 
 
@@ -84,13 +85,13 @@ void keyboardFunc( unsigned char key, int x, int y )
     case 'c':
         // add code to change color here
 		inc_mod(g::color_n, 1, 3);
-        last_keypress = key;
+        g::last_keypress = key;
         break;
     case 'r':
     case 'g':
     case 'b':
         inc_mod(g::colors[key], 0.1f, 1.0f);
-        last_keypress = key;
+        g::last_keypress = key;
         break;
     default:
         cout << "Unhandled key press " << key << "." << endl;        
@@ -108,19 +109,19 @@ void specialFunc( int key, int x, int y )
     {
     case GLUT_KEY_UP:
         // add code to change light position
-		cout << "Unhandled key press: up arrow." << endl;
+		g::ly += 1.0f;
 		break;
     case GLUT_KEY_DOWN:
         // add code to change light position
-		cout << "Unhandled key press: down arrow." << endl;
+		g::ly -= 1.0f;
 		break;
     case GLUT_KEY_LEFT:
         // add code to change light position
-		cout << "Unhandled key press: left arrow." << endl;
+		g::lx -= 1.0f;
 		break;
     case GLUT_KEY_RIGHT:
         // add code to change light position
-		cout << "Unhandled key press: right arrow." << endl;
+		g::lx += 1.0f;
 		break;
     }
 
@@ -173,7 +174,7 @@ void drawScene(void)
     // Light color (RGBA)
     GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
     // Light position
-	GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
+	GLfloat Lt0pos[] = {g::lx, g::ly, 5.0f, 1.0f};
 
     glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
     glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
