@@ -36,8 +36,8 @@ vector<Vector3f> vecv;
 vector<Vector3f> vecn;
 
 // This is the list of faces (indices into vecv and vecn)
-vector<vector<unsigned> > vecf;
-
+typedef vector<vector<unsigned> > faceVec;
+faceVec vecf;
 
 // You will need more global variables to implement color and position changes
 // globals are evil!
@@ -61,7 +61,7 @@ namespace g
 }
 
 
-// These are convenience functions which allow us to call OpenGL 
+// These are convenience functions which    allow us to call OpenGL 
 // methods on Vec3d objects
 inline void glVertex(const Vector3f &a) 
 { glVertex3fv(a); }
@@ -184,7 +184,32 @@ void drawScene(void)
 
 	// This GLUT method draws a teapot.  You should replace
 	// it with code which draws the object you loaded.
-	glutSolidTeapot(1.0);
+	// glutSolidTeapot(1.0);
+
+    faceVec::iterator iter = vecf.begin();
+
+
+    while (iter != vecf.end()) {
+        vector<unsigned> values = *iter;
+        unsigned a, c, d, f, g, i;
+        a = values[0];
+        c = values[2];
+        d = values[3];
+        f = values[5];
+        g = values[6];
+        i = values[8];
+
+        glBegin(GL_TRIANGLES);
+        glNormal3d(vecn[c-1][0], vecn[c-1][1], vecn[c-1][2]);
+        glVertex3d(vecv[a-1][0], vecv[a-1][1], vecv[a-1][2]);
+        glNormal3d(vecn[f-1][0], vecn[f-1][1], vecn[f-1][2]);
+        glVertex3d(vecv[d-1][0], vecv[d-1][1], vecv[d-1][2]);
+        glNormal3d(vecn[i-1][0], vecn[i-1][1], vecn[i-1][2]);
+        glVertex3d(vecv[g-1][0], vecv[g-1][1], vecv[g-1][2]);
+        glEnd();
+
+        iter++;
+    }
     
     // Dump the image to the screen.
     glutSwapBuffers();
@@ -248,9 +273,11 @@ void loadInput()
 
         Vector3f v;
         string s;
+        unsigned tmp;
+        char slash;
+        vector<unsigned> idx; // indices for vecf
 
         ss >> s; // put a token into s
-        cout << s;
         if (s == "v") {
             ss >> v[0] >> v[1] >> v[2];
             vecv.push_back(v);
@@ -258,10 +285,19 @@ void loadInput()
             ss >> v[0] >> v[1] >> v[2];
             vecn.push_back(v);
         } else if (s == "f") {
-            
+            while (ss.good()) {
+                ss >> tmp;
+                ss >> slash;
+                idx.push_back(tmp);
+                ss >> tmp;
+                ss >> slash;
+                idx.push_back(tmp);
+                ss >> tmp;
+                idx.push_back(tmp);
+            }
+            vecf.push_back(idx);
         }
     }
-
 }
 
 // Main routine.
