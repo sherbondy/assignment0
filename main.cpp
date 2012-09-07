@@ -54,7 +54,7 @@ namespace g
     int       colorN = 0;
     char      lastKey = 'c';
     float     lx, ly; // light position
-    int       startX, currentX = 0;
+    int       xPos, rotationX = 0;
 }
 
 
@@ -146,7 +146,7 @@ void drawScene(void)
 
     // Set material properties of object
 
-    glRotatef(g::currentX-g::startX, 0, 1, 0);
+    glRotatef(g::rotationX, 0, 1, 0);
 
 	// Here are some colors you might use - feel free to add more
     GLfloat diffColors[4][4] = { {0.5, 0.5, 0.9, 1.0},
@@ -217,14 +217,15 @@ void reshapeFunc(int w, int h)
 void motionFunc(int x, int y)
 {
     // move left or right based on previous x position.
-    g::currentX = x;
+    inc_mod(g::rotationX, x - g::xPos, 360);
+    g::xPos = x;
     glutPostRedisplay();
 }
 
 void mouseFunc(int button, int state, int x, int y)
 {
     if (state == GLUT_DOWN) {
-        g::currentX = g::startX = x;
+        g::xPos = x;
     }
     glutPostRedisplay();
 }
