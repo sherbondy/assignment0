@@ -19,6 +19,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <map>
+#include <math.h> // for fmod
 #include <vecmath.h>
 using namespace std;
 
@@ -35,6 +37,23 @@ vector<vector<unsigned> > vecf;
 
 
 // You will need more global variables to implement color and position changes
+// globals are evil!
+
+namespace g
+{
+    typedef map<char, float> color_map;
+    static color_map create_colors()
+    {
+        color_map colors;
+        colors['r'] = 0.0; colors['g'] = 0.0, colors['b'] = 0.0;
+        return colors;
+    }
+
+    // man, I should be using C++ 11
+    color_map colors = create_colors();
+    int       color_n = 0;
+    char      last_keypress;
+}
 
 
 // These are convenience functions which allow us to call OpenGL 
@@ -45,6 +64,14 @@ inline void glVertex(const Vector3f &a)
 inline void glNormal(const Vector3f &a) 
 { glNormal3fv(a); }
 
+inline int fmod(int a, int b)
+{ return a % b; }
+
+// I'm just practicing my C++. This is excessive.
+template <class T>
+void inc_mod(T &a, T increment, T max) {
+    a = fmod((a + increment), max);
+}
 
 // This function is called whenever a "Normal" key press is received.
 void keyboardFunc( unsigned char key, int x, int y )
@@ -56,7 +83,14 @@ void keyboardFunc( unsigned char key, int x, int y )
         break;
     case 'c':
         // add code to change color here
-		cout << "Unhandled key press " << key << "." << endl; 
+		inc_mod(g::color_n, 1, 3);
+        last_keypress = key;
+        break;
+    case 'r':
+    case 'g':
+    case 'b':
+        inc_mod(g::colors[key], 0.1f, 1.0f);
+        last_keypress = key;
         break;
     default:
         cout << "Unhandled key press " << key << "." << endl;        
@@ -119,9 +153,12 @@ void drawScene(void)
                                  {0.9, 0.5, 0.5, 1.0},
                                  {0.5, 0.9, 0.3, 1.0},
                                  {0.3, 0.8, 0.9, 1.0} };
+
+    GLfloat customColor[4] = {g::colors['r'], g::colors['g'], g::colors['b'], 1.0};
     
 	// Here we use the first color entry as the diffuse color
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diffColors[0]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, 
+                (g::last_keypress == 'c' ? diffColors[g::color_n] : customColor));
 
 	// Define specular color and shininess
     GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
