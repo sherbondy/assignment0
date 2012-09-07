@@ -4,6 +4,7 @@
 //
 // References: 
 // http://alumni.cs.ucsb.edu/~wombatty/tutorials/opengl_mac_osx.html
+// http://www.songho.ca/opengl/gl_transform.html
 */
 
 #ifdef __APPLE__
@@ -38,7 +39,6 @@ vector<vector<unsigned> > vecf;
 
 // You will need more global variables to implement color and position changes
 // globals are evil!
-
 namespace g
 {
     typedef map<char, float> color_map;
@@ -49,11 +49,12 @@ namespace g
         return colors;
     }
 
-    // man, I should be using C++ 11
+    // man, I should be using C++ 11 :(
     color_map colors = create_colors();
-    int       color_n = 0;
-    char      last_keypress = 'c';
+    int       colorN = 0;
+    char      lastKey = 'c';
     float     lx, ly; // light position
+    int       startX, currentX = 0;
 }
 
 
@@ -65,6 +66,7 @@ inline void glVertex(const Vector3f &a)
 inline void glNormal(const Vector3f &a) 
 { glNormal3fv(a); }
 
+// now I can mod all of the number types without complaint
 inline int fmod(int a, int b)
 { return a % b; }
 
@@ -83,15 +85,14 @@ void keyboardFunc( unsigned char key, int x, int y )
         exit(0);
         break;
     case 'c':
-        // add code to change color here
-		inc_mod(g::color_n, 1, 3);
-        g::last_keypress = key;
+		inc_mod(g::colorN, 1, 3);
+        g::lastKey = key;
         break;
     case 'r':
     case 'g':
     case 'b':
         inc_mod(g::colors[key], 0.1f, 1.0f);
-        g::last_keypress = key;
+        g::lastKey = key;
         break;
     default:
         cout << "Unhandled key press " << key << "." << endl;        
@@ -108,19 +109,15 @@ void specialFunc( int key, int x, int y )
     switch ( key )
     {
     case GLUT_KEY_UP:
-        // add code to change light position
 		g::ly += 1.0f;
 		break;
     case GLUT_KEY_DOWN:
-        // add code to change light position
 		g::ly -= 1.0f;
 		break;
     case GLUT_KEY_LEFT:
-        // add code to change light position
 		g::lx -= 1.0f;
 		break;
     case GLUT_KEY_RIGHT:
-        // add code to change light position
 		g::lx += 1.0f;
 		break;
     }
@@ -149,6 +146,8 @@ void drawScene(void)
 
     // Set material properties of object
 
+    glRotatef(g::currentX-g::startX, 0, 1, 0);
+
 	// Here are some colors you might use - feel free to add more
     GLfloat diffColors[4][4] = { {0.5, 0.5, 0.9, 1.0},
                                  {0.9, 0.5, 0.5, 1.0},
@@ -159,7 +158,7 @@ void drawScene(void)
     
 	// Here we use the first color entry as the diffuse color
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, 
-                (g::last_keypress == 'c' ? diffColors[g::color_n] : customColor));
+                (g::lastKey == 'c' ? diffColors[g::colorN] : customColor));
 
 	// Define specular color and shininess
     GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
@@ -215,6 +214,21 @@ void reshapeFunc(int w, int h)
     gluPerspective(50.0, 1.0, 1.0, 100.0);
 }
 
+void motionFunc(int x, int y)
+{
+    // move left or right based on previous x position.
+    g::currentX = x;
+    glutPostRedisplay();
+}
+
+void mouseFunc(int button, int state, int x, int y)
+{
+    if (state == GLUT_DOWN) {
+        g::currentX = g::startX = x;
+    }
+    glutPostRedisplay();
+}
+
 void loadInput()
 {
 	// load the OBJ file here
@@ -242,6 +256,8 @@ int main( int argc, char** argv )
     // Set up callback functions for key presses
     glutKeyboardFunc(keyboardFunc); // Handles "normal" ascii symbols
     glutSpecialFunc(specialFunc);   // Handles "special" keyboard keys
+    glutMotionFunc(motionFunc);
+    glutMouseFunc(mouseFunc);
 
      // Set up the callback function for resizing windows
     glutReshapeFunc( reshapeFunc );
