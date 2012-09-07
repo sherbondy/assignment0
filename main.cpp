@@ -188,7 +188,6 @@ void drawScene(void)
 
     faceVec::iterator iter = vecf.begin();
 
-
     while (iter != vecf.end()) {
         vector<unsigned> values = *iter;
         unsigned a, c, d, f, g, i;
